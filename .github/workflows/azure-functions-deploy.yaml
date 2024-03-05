@@ -32,26 +32,19 @@ jobs:
 
     - name: 'Install dependencies for Project 1'
       run: |
-        python -m venv .venv
-        source .venv/bin/activate
         pip install -r requirements.txt
       working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH_1 }}
-
     - name: 'Build Project 1'
       run: |
-        source .venv/bin/activate
         func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_1 }} --python
       working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH_1 }}
 
     - name: 'Install dependencies for Project 2'
       run: |
-        python -m venv .venv
-        source .venv/bin/activate
         pip install -r requirements.txt
       working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH_2 }}
 
     - name: 'Build Project 2'
       run: |
-        source .venv/bin/activate
         func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_2 }} --python
       working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH_2 }}
