@@ -1,12 +1,14 @@
-name: Deploy Python project to Azure Function-2 App
+name: Deploy Python project to Azure Function App
 
 on:
   [push]
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'multiple-functions-github-action-test-func2'   # set this to your function app name on Azure
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'func2'       # set this to the path to your function app project, defaults to the repository root
-  PYTHON_VERSION: '3.9'                     # set this to the python version to use (e.g. '3.6', '3.7', '3.8')
+  AZURE_FUNCTIONAPP_NAME_1: multiple-functions-github-action-test-func1   # Replace with your first Function App name
+  AZURE_FUNCTIONAPP_PACKAGE_PATH_1: 'func1'  # Replace with the path to your first project
+  AZURE_FUNCTIONAPP_NAME_2: multiple-functions-github-action-test-func2   # Replace with your second Function App name
+  AZURE_FUNCTIONAPP_PACKAGE_PATH_2: 'func2'  # Replace with the path to your second project
+  PYTHON_VERSION: '3.9'
 
 jobs:
   build-and-deploy:
