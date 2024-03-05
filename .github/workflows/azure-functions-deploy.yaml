@@ -1,42 +1,57 @@
-name: Deploy Python project to Azure Function App
+name: Deploy to Azure Functions
 
 on:
-  [push]
+  push:
+    branches:
+      - main  # Replace with your deployment branch
 
 env:
   AZURE_FUNCTIONAPP_NAME_1: multiple-functions-github-action-test-func1   # Replace with your first Function App name
-  AZURE_FUNCTIONAPP_PACKAGE_PATH_1: 'func1'  # Replace with the path to your first project
+  AZURE_FUNCTIONAPP_PACKAGE_PATH_1: func1  # Replace with the path to your first project
   AZURE_FUNCTIONAPP_NAME_2: multiple-functions-github-action-test-func2   # Replace with your second Function App name
-  AZURE_FUNCTIONAPP_PACKAGE_PATH_2: 'func2'  # Replace with the path to your second project
-  PYTHON_VERSION: '3.9'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH_2: func2  # Replace with the path to your second project
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: dev
+    
     steps:
-    - name: 'Checkout GitHub Action'
-      uses: actions/checkout@v3
+    - name: 'Checkout Repository'
+      uses: actions/checkout@v2
 
-    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
+    - name: 'Setup Python'
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+        python-version: 3.9
 
-    - name: 'Resolve Project Dependencies Using Pip'
-      shell: bash
+    - name: 'Print Environment Variables'
       run: |
-        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt --target=".python_packages/lib/site-packages"
-        popd
+        echo "AZURE_FUNCTIONAPP_NAME_1: ${{ env.AZURE_FUNCTIONAPP_NAME_1 }}"
+        echo "AZURE_FUNCTIONAPP_NAME_2: ${{ env.AZURE_FUNCTIONAPP_NAME_2 }}"
+      shell: bash
 
-    - name: 'Run Azure Functions Action'
-      uses: Azure/functions-action@v1
-      id: fa
-      with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-        scm-do-build-during-deployment: true
-        enable-oryx-build: true
+    - name: 'Install dependencies for Project 1'
+      run: |
+        python -m venv .venv
+        source .venv/bin/activate
+        pip install -r requirements.txt
+      working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH_1 }}
+
+    - name: 'Build Project 1'
+      run: |
+        source .venv/bin/activate
+        func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_1 }} --python
+      working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH_1 }}
+
+    - name: 'Install dependencies for Project 2'
+      run: |
+        python -m venv .venv
+        source .venv/bin/activate
+        pip install -r requirements.txt
+      working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH_2 }}
+
+    - name: 'Build Project 2'
+      run: |
+        source .venv/bin/activate
+        func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME_2 }} --python
+      working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH_2 }}
